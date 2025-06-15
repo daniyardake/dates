@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Invitation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff6b6b;
+            transform: rotate(45deg);
+            animation: float 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            left: -15px;
+        }
+
+        .heart::after {
+            top: -15px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: rotate(45deg) translateY(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: rotate(45deg) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            animation: fadeIn 1s ease-out;
+        }
+
+        p {
+            color: #34495e;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            animation: fadeIn 1s ease-out 0.5s backwards;
+        }
+
+        .date-time {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            animation: fadeIn 1s ease-out 1s backwards;
+        }
+
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 10px;
+            animation: fadeIn 1s ease-out 1.5s backwards;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            animation: fadeIn 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Will You Go On A Date With Me?</h1>
+        <p>I've been thinking about spending some special time with you...</p>
+        
+        <div class="date-time">
+            <p>When: <span id="date">Saturday, March 23rd</span></p>
+            <p>Time: <span id="time">7:00 PM</span></p>
+            <p>Where: <span id="location">Your favorite restaurant</span></p>
+        </div>
+
+        <button class="btn" onclick="showResponse('yes')">Yes, I'd love to! ❤️</button>
+        <button class="btn" onclick="showResponse('no')" id="noBtn">Maybe another time</button>
+
+        <div id="yesMessage" class="message hidden">
+            <h2>Yay! I'm so excited! 🎉</h2>
+            <p>I'll pick you up at 6:30 PM. Can't wait to see you!</p>
+        </div>
+
+        <div id="noMessage" class="message hidden">
+            <h2>Are you sure? 😢</h2>
+            <p>The button keeps moving... Try clicking it again!</p>
+        </div>
+    </div>
+
+    <script>
+        function showResponse(response) {
+            if (response === 'yes') {
+                document.getElementById('yesMessage').classList.remove('hidden');
+                document.getElementById('noMessage').classList.add('hidden');
+                createHearts();
+            } else {
+                document.getElementById('noMessage').classList.remove('hidden');
+                document.getElementById('yesMessage').classList.add('hidden');
+                moveNoButton();
+            }
+        }
+
+        function moveNoButton() {
+            const btn = document.getElementById('noBtn');
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = btn.getBoundingClientRect();
+
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            btn.style.position = 'absolute';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + '%';
+                document.querySelector('.container').appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }, 300);
+        }
+
+        // Initialize hearts
+        createHearts();
+    </script>
+</body>
+</html> 
