@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Special Invitation</title>
+    <title>An Invitation</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Courier New', monospace;
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #000;
+            color: #fff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,160 +23,119 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
             max-width: 600px;
             width: 100%;
-            text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
-        .heart {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff6b6b;
-            transform: rotate(45deg);
-            animation: float 3s ease-in-out infinite;
-            opacity: 0;
-        }
-
-        .heart::before,
-        .heart::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff6b6b;
-            border-radius: 50%;
-        }
-
-        .heart::before {
-            left: -15px;
-        }
-
-        .heart::after {
-            top: -15px;
-        }
-
-        @keyframes float {
-            0% {
-                transform: rotate(45deg) translateY(0);
-                opacity: 0;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: rotate(45deg) translateY(-100px);
-                opacity: 0;
-            }
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            animation: fadeIn 1s ease-out;
-        }
-
-        p {
-            color: #34495e;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            animation: fadeIn 1s ease-out 0.5s backwards;
+        .coordinates {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
         }
 
         .date-time {
-            background: #f8f9fa;
-            padding: 20px;
+            font-size: 2em;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .map-container {
+            margin: 30px 0;
             border-radius: 10px;
-            margin: 20px 0;
-            animation: fadeIn 1s ease-out 1s backwards;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         .btn {
-            background: #ff6b6b;
-            color: white;
+            background: #fff;
+            color: #000;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
+            padding: 20px 40px;
+            font-size: 1.2em;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             margin: 10px;
-            animation: fadeIn 1s ease-out 1.5s backwards;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            transform: scale(1.05);
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.3s ease;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
             }
         }
 
-        .hidden {
+        .message {
+            margin-top: 30px;
+            font-size: 1.2em;
+            animation: fadeIn 0.5s ease-out;
             display: none;
         }
 
-        .message {
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            animation: fadeIn 1s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Will You Go On A Date With Me?</h1>
-        <p>I've been thinking about spending some special time with you...</p>
+        <div class="coordinates">43°14'32.6"N 76°57'32.8"E</div>
+        <div class="date-time">June 18, 2025<br>19:15</div>
         
-        <div class="date-time">
-            <p>When: <span id="date">Saturday, March 23rd</span></p>
-            <p>Time: <span id="time">7:00 PM</span></p>
-            <p>Where: <span id="location">Your favorite restaurant</span></p>
+        <div class="map-container">
+            <iframe 
+                src="https://www.openstreetmap.org/export/embed.html?bbox=76.957111,43.241389,76.961111,43.243389&layer=mapnik&marker=43.242389,76.959111"
+                width="600" 
+                height="400" 
+                frameborder="0" 
+                scrolling="no">
+            </iframe>
         </div>
 
-        <button class="btn" onclick="showResponse('yes')">Yes, I'd love to! ❤️</button>
-        <button class="btn" onclick="showResponse('no')" id="noBtn">Maybe another time</button>
-
-        <div id="yesMessage" class="message hidden">
-            <h2>Yay! I'm so excited! 🎉</h2>
-            <p>I'll pick you up at 6:30 PM. Can't wait to see you!</p>
+        <div class="button-container">
+            <button class="btn" onclick="sendTelegramMessage()">I'll be there</button>
+            <button class="btn" id="noBtn" onclick="moveNoButton()">No</button>
         </div>
 
-        <div id="noMessage" class="message hidden">
-            <h2>Are you sure? 😢</h2>
-            <p>The button keeps moving... Try clicking it again!</p>
-        </div>
+        <div id="message" class="message"></div>
     </div>
 
     <script>
-        function showResponse(response) {
-            if (response === 'yes') {
-                document.getElementById('yesMessage').classList.remove('hidden');
-                document.getElementById('noMessage').classList.add('hidden');
-                createHearts();
-            } else {
-                document.getElementById('noMessage').classList.remove('hidden');
-                document.getElementById('yesMessage').classList.add('hidden');
-                moveNoButton();
-            }
+        function sendTelegramMessage() {
+            const message = "I'm coming. See you soon 🌱";
+            const telegramUrl = `https://t.me/danikhandro?text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+            document.getElementById('message').style.display = 'block';
+            document.getElementById('message').textContent = "Message sent! See you there! ❤️";
         }
 
         function moveNoButton() {
@@ -184,32 +144,18 @@
             const containerRect = container.getBoundingClientRect();
             const btnRect = btn.getBoundingClientRect();
 
+            // Calculate random position within container bounds
             const maxX = containerRect.width - btnRect.width;
             const maxY = containerRect.height - btnRect.height;
 
             const randomX = Math.floor(Math.random() * maxX);
             const randomY = Math.floor(Math.random() * maxY);
 
+            // Apply new position
             btn.style.position = 'absolute';
             btn.style.left = randomX + 'px';
             btn.style.top = randomY + 'px';
         }
-
-        function createHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.classList.add('heart');
-                heart.style.left = Math.random() * 100 + '%';
-                document.querySelector('.container').appendChild(heart);
-
-                setTimeout(() => {
-                    heart.remove();
-                }, 3000);
-            }, 300);
-        }
-
-        // Initialize hearts
-        createHearts();
     </script>
 </body>
 </html> 
