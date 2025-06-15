@@ -125,6 +125,7 @@
             margin: 10px;
             text-transform: uppercase;
             letter-spacing: 3px;
+            touch-action: manipulation;
         }
 
         .btn:hover {
@@ -184,6 +185,21 @@
             display: flex;
             animation: fadeIn 0.3s ease-out;
         }
+
+        .no-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -214,6 +230,7 @@
         </div>
 
         <div id="message" class="message"></div>
+        <div id="noMessage" class="no-message">We can't accept NO ❤️</div>
     </div>
 
     <div class="modal" onclick="hideModal()">
@@ -221,6 +238,8 @@
     </div>
 
     <script>
+        let noButtonClicks = 0;
+
         function sendTelegramMessage() {
             const message = "I'm coming. See you soon 🌱";
             const telegramUrl = `https://t.me/danikhandro?text=${encodeURIComponent(message)}`;
@@ -230,6 +249,14 @@
         }
 
         function moveNoButton() {
+            noButtonClicks++;
+            
+            if (noButtonClicks >= 3) {
+                document.getElementById('noBtn').style.display = 'none';
+                document.getElementById('noMessage').style.display = 'block';
+                return;
+            }
+
             const btn = document.getElementById('noBtn');
             const container = document.querySelector('.container');
             const containerRect = container.getBoundingClientRect();
@@ -239,13 +266,24 @@
             const maxX = containerRect.width - btnRect.width;
             const maxY = containerRect.height - btnRect.height;
 
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
+            // Ensure the button stays within the viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const randomX = Math.min(
+                Math.max(0, Math.floor(Math.random() * maxX)),
+                viewportWidth - btnRect.width
+            );
+            const randomY = Math.min(
+                Math.max(0, Math.floor(Math.random() * maxY)),
+                viewportHeight - btnRect.height
+            );
 
-            // Apply new position
-            btn.style.position = 'absolute';
+            // Apply new position with smooth transition
+            btn.style.position = 'fixed';
             btn.style.left = randomX + 'px';
             btn.style.top = randomY + 'px';
+            btn.style.transition = 'all 0.3s ease';
         }
 
         function showModal() {
