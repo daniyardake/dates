@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date N2 - Mountain Hike</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Hiking background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 30%, rgba(139, 69, 19, 0.05) 30%, rgba(139, 69, 19, 0.05) 35%, transparent 35%),
+                linear-gradient(-45deg, transparent 70%, rgba(139, 69, 19, 0.05) 70%, rgba(139, 69, 19, 0.05) 75%, transparent 75%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Floating hiking elements */
+        .hiking-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .hiking-element {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.03;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .hiking-element:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .hiking-element:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .hiking-element:nth-child(3) { top: 60%; left: 5%; animation-delay: 2s; }
+        .hiking-element:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 3s; }
+        .hiking-element:nth-child(5) { top: 40%; left: 80%; animation-delay: 4s; }
+        .hiking-element:nth-child(6) { bottom: 40%; left: 20%; animation-delay: 5s; }
+        .hiking-element:nth-child(7) { top: 80%; right: 30%; animation-delay: 6s; }
+        .hiking-element:nth-child(8) { top: 15%; left: 60%; animation-delay: 7s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            padding: 60px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .date-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .date-number::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+        }
+
+        .hiking-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .coordinates {
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .date-time {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .dress-code {
+            font-size: 0.95rem;
+            margin: 30px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        .photo-container {
+            width: 120px;
+            height: 120px;
+            margin: 30px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .photo-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .photo-container:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .photo-container:hover::before {
+            opacity: 1;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .map-container {
+            margin: 30px 0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            margin: 8px;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            border-radius: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.3s ease;
+            background: rgba(255, 59, 48, 0.2);
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+
+        #noBtn:hover {
+            background: rgba(255, 59, 48, 0.3);
+            border-color: rgba(255, 59, 48, 0.5);
+        }
+
+        /* Balloon pop animation */
+        @keyframes balloonGrow {
+            0% { transform: scale(1); }
+            50% { transform: scale(3.5); }
+            100% { transform: scale(4); }
+        }
+
+        @keyframes balloonPop {
+            0% { 
+                transform: scale(4);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(4.2);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .balloon-pop {
+            animation: balloonGrow 0.8s ease-out, balloonPop 0.3s ease-in 0.8s forwards;
+        }
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .video-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ff3b30;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .video-close {
+            background: rgba(255, 59, 48, 0.3);
+            color: #fff;
+            border: 1px solid rgba(255, 59, 48, 0.5);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .video-close:hover {
+            background: rgba(255, 59, 48, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: none;
+            color: #fff;
+            background: rgba(52, 199, 89, 0.2);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        /* CAPTCHA Modal */
+        .captcha-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .captcha-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .captcha-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ff3b30;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .captcha-problem {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 25px 0;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 59, 48, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .captcha-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .captcha-input:focus {
+            outline: none;
+            border-color: #ff3b30;
+            box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+        }
+
+        .captcha-btn {
+            background: rgba(255, 59, 48, 0.3);
+            color: #fff;
+            border: 1px solid rgba(255, 59, 48, 0.5);
+            padding: 12px 25px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-btn:hover {
+            background: rgba(255, 59, 48, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .captcha-warning {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .no-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 59, 48, 0.9);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 20px 40px rgba(255, 59, 48, 0.3);
+            backdrop-filter: blur(20px);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.95rem;
+        }
+
+        .visitor-info {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            font-size: 0.7rem;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+            white-space: pre-line;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-weight: 400;
+        }
+
+        .visitor-info:hover {
+            opacity: 0.8;
+        }
+
+        .log-entry {
+            margin: 4px 0;
+            padding: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Apple-style accent elements */
+        .accent-line {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 35px;
+            height: 2px;
+            background: linear-gradient(90deg, #007AFF, #5856D6);
+            border-radius: 1px;
+        }
+
+        .accent-dot {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            width: 6px;
+            height: 6px;
+            background: #007AFF;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        /* Mountain decoration */
+        .mountain-icon {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            font-size: 2rem;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 15px;
+                margin: 10px;
+            }
+            
+            .date-number {
+                font-size: 2rem;
+            }
+            
+            .date-time {
+                font-size: 1.5rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hiking background elements -->
+    <div class="hiking-bg">
+        <div class="hiking-element">🥾</div>
+        <div class="hiking-element">🏔️</div>
+        <div class="hiking-element">🌲</div>
+        <div class="hiking-element">⛰️</div>
+        <div class="hiking-element">🧭</div>
+        <div class="hiking-element">🎒</div>
+        <div class="hiking-element">🏕️</div>
+        <div class="hiking-element">🗺️</div>
+    </div>
+
+    <div class="container">
+        <div class="accent-line"></div>
+        <div class="accent-dot"></div>
+        <div class="mountain-icon">🏔️</div>
+        
+        <div class="date-number">Date N2/3</div>
+        <div class="coordinates">43°12'34.9"N 76°51'33.4"E</div>
+        <div class="date-time">June 22, 06:00</div>
+        
+        <div class="dress-code">Hiking gear & comfortable shoes</div>
+
+        <div class="photo-container" onclick="showModal()">
+            <img src="us.JPG" alt="Us" loading="lazy">
+        </div>
+        
+        <div class="map-container">
+            <iframe 
+                src="https://www.openstreetmap.org/export/embed.html?bbox=76.910833,43.206389,76.920833,43.216389&layer=mapnik&marker=43.212389,76.915833"
+                width="600" 
+                height="400" 
+                frameborder="0" 
+                scrolling="no">
+            </iframe>
+        </div>
+
+        <div class="button-container">
+            <button class="btn" onclick="sendTelegramMessage()">I'll be there</button>
+            <button class="btn" onclick="sendTelegramMessage2()">I am definitely coming</button>
+        </div>
+
+        <div id="message" class="message"></div>
+        <div id="noMessage" class="no-message">We can't accept NO</div>
+    </div>
+
+    <!-- CAPTCHA Modal -->
+    <div class="captcha-modal" id="captchaModal">
+        <div class="captcha-container">
+            <div class="captcha-title">⚠️ Security Verification Required ⚠️</div>
+            <div class="captcha-problem" id="mathProblem">Loading...</div>
+            <input type="number" class="captcha-input" id="captchaAnswer" placeholder="Enter your answer" autocomplete="off">
+            <button class="captcha-btn" onclick="verifyCaptcha()">Verify Answer</button>
+            <div class="captcha-warning">This verification is required to proceed</div>
+        </div>
+    </div>
+
+    <div class="modal" onclick="hideModal()">
+        <img src="us.JPG" alt="Us">
+    </div>
+
+    <div class="visitor-info" id="visitorInfo"></div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-container">
+            <div class="video-title">Sorry, I can't make it</div>
+            <div class="video-wrapper">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/owXEtkF4uB8?si=UANdos7i1mKLu_OD" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <button class="video-close" onclick="hideVideo()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Device Info Logging
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            const browserInfo = {
+                timestamp: new Date().toISOString(),
+                browser: {
+                    name: getBrowserName(ua),
+                    version: getBrowserVersion(ua),
+                    language: navigator.language
+                },
+                device: {
+                    type: /iPhone|iPad|iPod|Android/i.test(ua) ? 'Mobile' : 'Desktop',
+                    platform: navigator.platform,
+                    vendor: navigator.vendor,
+                    screen: {
+                        width: window.screen.width,
+                        height: window.screen.height,
+                        ratio: window.devicePixelRatio
+                    }
+                },
+                os: getOperatingSystem(ua)
+            };
+
+            return browserInfo;
+        }
+
+        function getBrowserName(ua) {
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Safari')) return 'Safari';
+            if (ua.includes('Edge')) return 'Edge';
+            if (ua.includes('Opera')) return 'Opera';
+            return 'Unknown';
+        }
+
+        function getBrowserVersion(ua) {
+            const match = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i);
+            return match ? match[2] : 'Unknown';
+        }
+
+        function getOperatingSystem(ua) {
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'MacOS';
+            if (ua.includes('Linux')) return 'Linux';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('iOS')) return 'iOS';
+            return 'Unknown';
+        }
+
+        function logVisitor() {
+            const deviceInfo = getDeviceInfo();
+            
+            // Store in localStorage
+            const logs = JSON.parse(localStorage.getItem('visitorLogs') || '[]');
+            logs.push(deviceInfo);
+            localStorage.setItem('visitorLogs', JSON.stringify(logs));
+
+            // Update display
+            updateVisitorInfo(deviceInfo);
+        }
+
+        function updateVisitorInfo(info) {
+            const visitorInfo = document.getElementById('visitorInfo');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            
+            const displayText = `${dateString} ${timeString}
+${info.device.type === 'Mobile' ? '📱' : '💻'} ${info.browser.name} ${info.browser.version}
+${info.os} (${info.device.screen.width}x${info.device.screen.height})`;
+            
+            visitorInfo.textContent = displayText;
+        }
+
+        // Log visitor on page load
+        logVisitor();
+
+        let noButtonClicks = 0;
+        let currentAnswer = 0;
+
+        // Complex math problems for CAPTCHA
+        const mathProblems = [
+            { problem: "∫(x² + 3x + 7)dx from 0 to 5", answer: 0 },
+            { problem: "lim(x→∞) (2x³ + 5x² - 3x + 1)/(x³ + 2x² + 4)", answer: 0 },
+            { problem: "d/dx[sin(x²)cos(3x)]", answer: 0 },
+            { problem: "∑(n=1 to ∞) 1/n²", answer: 0 },
+            { problem: "det([[3,7],[2,5]]) × √(16)", answer: 0 },
+            { problem: "log₂(1024) + e^(ln(5))", answer: 0 },
+            { problem: "arcsin(1/2) + arccos(0)", answer: 0 },
+            { problem: "∇·(∇×F) where F = [x²,y²,z²]", answer: 0 },
+            { problem: "P(A|B) = P(B|A)P(A)/P(B)", answer: 0 },
+            { problem: "∮C F·dr where F = [y,-x]", answer: 0 }
+        ];
+
+        function generateMathProblem() {
+            const randomProblem = mathProblems[Math.floor(Math.random() * mathProblems.length)];
+            document.getElementById('mathProblem').textContent = randomProblem.problem;
+            currentAnswer = randomProblem.answer;
+        }
+
+        function showCaptcha() {
+            generateMathProblem();
+            document.getElementById('captchaModal').style.display = 'flex';
+            document.getElementById('captchaAnswer').focus();
+        }
+
+        function verifyCaptcha() {
+            const userAnswer = document.getElementById('captchaAnswer').value;
+            
+            // Always show wrong answer message
+            document.getElementById('captchaModal').style.display = 'none';
+            document.getElementById('noBtn').style.display = 'none';
+            document.getElementById('noMessage').style.display = 'block';
+            document.getElementById('captchaAnswer').value = '';
+        }
+
+        function showVideo() {
+            document.getElementById('videoModal').style.display = 'flex';
+        }
+
+        function hideVideo() {
+            document.getElementById('videoModal').style.display = 'none';
+        }
+
+        function sendTelegramMessage() {
+            const message = "Looking forward to our second date";
+            const telegramUrl = `https://t.me/danikhandro?text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+            document.getElementById('message').style.display = 'block';
+            document.getElementById('message').textContent = "Message sent! See you on the trail.";
+        }
+
+        function sendTelegramMessage2() {
+            const message = "I am definitely coming to our second date";
+            const telegramUrl = `https://t.me/danikhandro?text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+            document.getElementById('message').style.display = 'block';
+            document.getElementById('message').textContent = "Message sent! Can't wait to see you! 🥾";
+        }
+
+        function showModal() {
+            document.querySelector('.modal').classList.add('active');
+        }
+
+        function hideModal() {
+            document.querySelector('.modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html> 
