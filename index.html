@@ -1,1 +1,233 @@
-Hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Invitations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            padding: 40px;
+        }
+
+        .title {
+            font-size: 3em;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            padding: 20px 40px;
+            border: 2px solid #fff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #fff,
+                           0 0 20px #fff,
+                           0 0 30px #fff;
+            }
+            to {
+                box-shadow: 0 0 20px #fff,
+                           0 0 30px #fff,
+                           0 0 40px #fff;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 50px;
+            opacity: 0.8;
+            letter-spacing: 2px;
+        }
+
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .nav-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 25px 40px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .date-info {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .visitor-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.8em;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            white-space: pre-line;
+            text-align: right;
+        }
+
+        .visitor-info:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Date Invitations</div>
+        <div class="subtitle">Choose your adventure</div>
+        
+        <div class="nav-container">
+            <button class="nav-btn" onclick="window.location.href='./1'">
+                Date 1/3
+                <div class="date-info">June 18, 2025 • 19:15</div>
+            </button>
+            
+            <button class="nav-btn" onclick="window.location.href='./2'">
+                Date 2/3
+                <div class="date-info">June 22, 2025 • 06:00</div>
+            </button>
+            
+            <button class="nav-btn" onclick="window.location.href='./3'">
+                Date 3/3
+                <div class="date-info">Coming Soon</div>
+            </button>
+        </div>
+    </div>
+
+    <div class="visitor-info" id="visitorInfo"></div>
+
+    <script>
+        // Device Info Logging
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            const browserInfo = {
+                timestamp: new Date().toISOString(),
+                browser: {
+                    name: getBrowserName(ua),
+                    version: getBrowserVersion(ua),
+                    language: navigator.language
+                },
+                device: {
+                    type: /iPhone|iPad|iPod|Android/i.test(ua) ? 'Mobile' : 'Desktop',
+                    platform: navigator.platform,
+                    vendor: navigator.vendor,
+                    screen: {
+                        width: window.screen.width,
+                        height: window.screen.height,
+                        ratio: window.devicePixelRatio
+                    }
+                },
+                os: getOperatingSystem(ua)
+            };
+
+            return browserInfo;
+        }
+
+        function getBrowserName(ua) {
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Safari')) return 'Safari';
+            if (ua.includes('Edge')) return 'Edge';
+            if (ua.includes('Opera')) return 'Opera';
+            return 'Unknown';
+        }
+
+        function getBrowserVersion(ua) {
+            const match = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i);
+            return match ? match[2] : 'Unknown';
+        }
+
+        function getOperatingSystem(ua) {
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'MacOS';
+            if (ua.includes('Linux')) return 'Linux';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('iOS')) return 'iOS';
+            return 'Unknown';
+        }
+
+        function logVisitor() {
+            const deviceInfo = getDeviceInfo();
+            
+            // Store in localStorage
+            const logs = JSON.parse(localStorage.getItem('visitorLogs') || '[]');
+            logs.push(deviceInfo);
+            localStorage.setItem('visitorLogs', JSON.stringify(logs));
+
+            // Update display
+            updateVisitorInfo(deviceInfo);
+        }
+
+        function updateVisitorInfo(info) {
+            const visitorInfo = document.getElementById('visitorInfo');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            
+            const displayText = `${dateString} ${timeString}
+${info.device.type === 'Mobile' ? '📱' : '💻'} ${info.browser.name} ${info.browser.version}
+${info.os} (${info.device.screen.width}x${info.device.screen.height})`;
+            
+            visitorInfo.textContent = displayText;
+        }
+
+        // Log visitor on page load
+        logVisitor();
+    </script>
+</body>
+</html>
