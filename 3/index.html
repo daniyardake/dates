@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date 3 - Your Turn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            padding: 40px;
+        }
+
+        .date-number {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            padding: 10px 30px;
+            border: 2px solid #fff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #fff,
+                           0 0 20px #fff,
+                           0 0 30px #fff;
+            }
+            to {
+                box-shadow: 0 0 20px #fff,
+                           0 0 30px #fff,
+                           0 0 40px #fff;
+            }
+        }
+
+        .message {
+            font-size: 1.8em;
+            margin-bottom: 40px;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .memory {
+            font-size: 1.3em;
+            margin: 30px 0;
+            font-style: italic;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .invitation {
+            font-size: 1.5em;
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        #noBtn.expanding {
+            animation: expandAndPop 1.2s ease-out forwards;
+        }
+
+        @keyframes expandAndPop {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1);
+            }
+            20% {
+                transform: scale(1.2) rotate(5deg);
+                opacity: 1;
+                filter: brightness(1.5);
+            }
+            40% {
+                transform: scale(1.4) rotate(-5deg);
+                opacity: 0.9;
+                filter: brightness(2);
+            }
+            60% {
+                transform: scale(1.8) rotate(10deg);
+                opacity: 0.7;
+                filter: brightness(2.5);
+            }
+            80% {
+                transform: scale(2.2) rotate(-10deg);
+                opacity: 0.4;
+                filter: brightness(3);
+            }
+            100% {
+                transform: scale(3) rotate(0deg);
+                opacity: 0;
+                filter: brightness(4);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .result-message {
+            margin-top: 30px;
+            font-size: 1.2em;
+            animation: fadeIn 0.5s ease-out;
+            display: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .no-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            display: none;
+            z-index: 1000;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .visitor-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.8em;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            white-space: pre-line;
+            text-align: right;
+        }
+
+        .visitor-info:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date-number">Date 3/3</div>
+        
+        <div class="message">It's your turn to invite me</div>
+
+        <div class="memory">
+            Remember that Medeo -> Apa Katya date last year?<br>
+            When you invited me for a walk?<br>
+            Maybe it's time for a repeat? 🌱
+        </div>
+
+        <div class="invitation">
+            Location: You choose<br>
+            Time: You decide<br>
+            <span style="font-size: 0.9em; opacity: 0.8;">(Just like old times)</span>
+        </div>
+
+        <div class="button-container">
+            <button class="btn" onclick="acceptInvitation()">I'll invite you</button>
+            <button class="btn" id="noBtn" onclick="moveNoButton()">No</button>
+        </div>
+
+        <div id="resultMessage" class="result-message"></div>
+        <div id="noMessage" class="no-message">We can't accept NO ❤️</div>
+    </div>
+
+    <div class="visitor-info" id="visitorInfo"></div>
+
+    <script>
+        let noButtonClicks = 0;
+
+        function acceptInvitation() {
+            const message = "I wanted to take a walk after work today. Want to join? Maybe Medeo dam?";
+            const telegramUrl = `https://t.me/danikhandro?text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+            
+            document.getElementById('resultMessage').style.display = 'block';
+            document.getElementById('resultMessage').textContent = "Perfect! I can't wait for your invitation! 🎉";
+            
+            // Store the response
+            localStorage.setItem('date3Response', JSON.stringify({
+                response: 'accepted',
+                timestamp: new Date().toISOString()
+            }));
+        }
+
+        function moveNoButton() {
+            noButtonClicks++;
+            
+            if (noButtonClicks >= 1) {
+                const btn = document.getElementById('noBtn');
+                btn.classList.add('expanding');
+                
+                setTimeout(() => {
+                    btn.style.display = 'none';
+                    document.getElementById('noMessage').style.display = 'block';
+                }, 1200);
+                return;
+            }
+
+            const btn = document.getElementById('noBtn');
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = btn.getBoundingClientRect();
+
+            // Calculate random position within container bounds
+            const maxX = containerRect.width - btnRect.width;
+            const maxY = containerRect.height - btnRect.height;
+
+            // Ensure the button stays within the viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const randomX = Math.min(
+                Math.max(0, Math.floor(Math.random() * maxX)),
+                viewportWidth - btnRect.width
+            );
+            const randomY = Math.min(
+                Math.max(0, Math.floor(Math.random() * maxY)),
+                viewportHeight - btnRect.height
+            );
+
+            // Apply new position with smooth transition
+            btn.style.position = 'fixed';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+            btn.style.transition = 'all 0.3s ease';
+        }
+
+        // Device Info Logging
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            const browserInfo = {
+                timestamp: new Date().toISOString(),
+                browser: {
+                    name: getBrowserName(ua),
+                    version: getBrowserVersion(ua),
+                    language: navigator.language
+                },
+                device: {
+                    type: /iPhone|iPad|iPod|Android/i.test(ua) ? 'Mobile' : 'Desktop',
+                    platform: navigator.platform,
+                    vendor: navigator.vendor,
+                    screen: {
+                        width: window.screen.width,
+                        height: window.screen.height,
+                        ratio: window.devicePixelRatio
+                    }
+                },
+                os: getOperatingSystem(ua)
+            };
+
+            return browserInfo;
+        }
+
+        function getBrowserName(ua) {
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Safari')) return 'Safari';
+            if (ua.includes('Edge')) return 'Edge';
+            if (ua.includes('Opera')) return 'Opera';
+            return 'Unknown';
+        }
+
+        function getBrowserVersion(ua) {
+            const match = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i);
+            return match ? match[2] : 'Unknown';
+        }
+
+        function getOperatingSystem(ua) {
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'MacOS';
+            if (ua.includes('Linux')) return 'Linux';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('iOS')) return 'iOS';
+            return 'Unknown';
+        }
+
+        function logVisitor() {
+            const deviceInfo = getDeviceInfo();
+            
+            // Store in localStorage
+            const logs = JSON.parse(localStorage.getItem('visitorLogs') || '[]');
+            logs.push(deviceInfo);
+            localStorage.setItem('visitorLogs', JSON.stringify(logs));
+
+            // Update display
+            updateVisitorInfo(deviceInfo);
+        }
+
+        function updateVisitorInfo(info) {
+            const visitorInfo = document.getElementById('visitorInfo');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            
+            const displayText = `${dateString} ${timeString}
+${info.device.type === 'Mobile' ? '📱' : '💻'} ${info.browser.name} ${info.browser.version}
+${info.os} (${info.device.screen.width}x${info.device.screen.height})`;
+            
+            visitorInfo.textContent = displayText;
+        }
+
+        // Log visitor on page load
+        logVisitor();
+    </script>
+</body>
+</html>
